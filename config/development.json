@@ -1,0 +1,31 @@
+{
+  "log4js": {
+    "appenders": {
+      "stdout": { "type": "stdout" }
+    },
+    "categories": {
+      "default": {
+        "appenders": ["stdout"],
+        "level": "INFO"
+      }
+    }
+  },
+  "db": {
+    "name": "tst.db"
+  },
+  "mapper": {
+    "init": {
+      "namespace": "db",
+      "sql": "init"
+    },
+    "ignoreInit": {
+      "namespace": "db",
+      "sql": "ignoreInit"
+    }
+  },
+  "github": {
+    "clientId": "688d3c564b0ae7b2cedb",
+    "clientSecret": "199cf7c61a065c16524823426b97c2e584799c9d",
+    "callbackUrl": "https://tm7zd.sse.codesandbox.io/auth/github_callback"
+  }
+}

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="db">
+    <sql id="init">
+        CREATE TABLE users(
+            userId VARCHAR(128) PRIMARY KEY,
+            name VARCHAR(128) NOT NULL,
+            pass VARCHAR(64) NOT NULL,
+            secret VARCHAR(16),
+            githubUserName VARCHAR(128),
+            permissions INTEGER NOT NULL DEFAULT 0
+        );
+        CREATE TABLE sessions(
+            userId VARCHAR(128) NOT NULL,
+            sessionId VARCHAR(36) NOT NULL,
+            token VARCHAR(36) NOT NULL,
+            lastAccess TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+        INSERT INTO users (userId, name, pass, permissions) VALUES ('root', 'rootuser', '$2b$10$wIZm9St96d0gpvrEaGPXYea4vGkMq6EgHHemR0JP7MpS/2p4s7WS.', 0x1);
+    </sql>
+    <select id="ignoreInit">
+        SELECT TRUE FROM sqlite_master WHERE type = 'table' AND name = 'users'
+    </select>
+    <select id="listUsers">
+        SELECT userId, name, permissions FROM users
+    </select>
+    <select id="findUser">
+        SELECT userId, name, pass, githubUserName, secret, permissions FROM users WHERE userId = #{userId}
+    </select>
+    <select id="findGithubUser">
+        SELECT userId FROM users WHERE githubUserName = #{githubUserName}
+    </select>
+    <insert id="addUser">
+        INSERT INTO users (userId, name, pass, githubUserName, secret, permissions) VALUES (#{userId}, #{name}, #{pass}, #{githubUserName}, #{secret}, #{permissions})
+    </insert>
+    <update id="modifyUser">
+        UPDATE users SET name = #{name}<if test="pass != null">, pass = #{pass}</if><if test="permissions != null">, permissions = #{permissions}</if>, githubUserName = #{githubUserName}, secret = #{secret} WHERE userId = #{userId}
+    </update>
+    <delete id="removeUser">
+        DELETE FROM users WHERE userId = #{userId};
+        <include refid="removeSession"/>
+    </delete>
+    <select id="findSession">
+        SELECT userId FROM sessions WHERE sessionId = #{sessionId} AND token = #{token} AND DATETIME(CURRENT_TIMESTAMP, '-30 minutes') &lt;= lastAccess
+    </select>
+    <update id="modifySession">
+        UPDATE sessions SET lastAccess = CURRENT_TIMESTAMP, token = #{token} WHERE userId = #{userId}
+    </update>
+    <insert id="addSession">
+        <include refid="removeSession"/>
+        INSERT INTO sessions (userId, sessionId, token) VALUES (#{userId}, #{sessionId}, #{token});
+    </insert>
+    <delete id="removeSession">
+        DELETE FROM sessions WHERE userId = #{userId};
+    </delete>
+</mapper>
