@@ -26,6 +26,6 @@
   "github": {
     "clientId": "688d3c564b0ae7b2cedb",
     "clientSecret": "199cf7c61a065c16524823426b97c2e584799c9d",
-    "callbackUrl": "https://tm7zd.sse.codesandbox.io/auth/github_callback"
+    "callbackUrl": "https://9gtsk.sse.codesandbox.io/auth/github_callback"
   }
 }
